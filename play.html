@@ -60,7 +60,7 @@
 </style>
 </head>
 <body>
-<div id="rules-modal" class="mc-modal-overlay">
+<div id="rules-modal" class="mc-modal-overlay" onclick="if(event.target===this && isViewMode) closeRules()">
   <div class="mc-modal-box">
     <div class="mc-modal-title">網頁版 Minecraft 多版本整理</div>
     <div class="mc-modal-inner">
@@ -72,15 +72,47 @@
         <li><span class="mc-green">版本異常回報：</span>不同版本可能存在渲染或皮膚顯示等已知 Bug，遊玩前請先留意列表說明。</li>
       </ul>
     </div>
-    <div class="mc-modal-actions">
-      <button class="mc-modal-btn" onclick="document.getElementById('rules-modal').style.display='none'">同意</button>
-      <button class="mc-modal-btn mc-btn-disagree" onclick="disagreeRules()">不同意</button>
+    <div id="modal-actions" class="mc-modal-actions">
+      <button id="btn-agree" class="mc-modal-btn" onclick="agreeRules()">同意</button>
+      <button id="btn-disagree" class="mc-modal-btn mc-btn-disagree" onclick="disagreeRules()">不同意</button>
     </div>
+    <div id="view-close-tip" style="display:none;text-align:center;color:#333;font-weight:bold;margin-top:14px;font-size:14px;text-shadow:1px 1px 0 #fff;">（點擊視窗外空白處即可關閉）</div>
     <div id="reject-msg" style="display:none;color:#ff5555;text-align:center;font-weight:bold;margin-top:14px;text-shadow:1.5px 1.5px 0 #222;font-size:15px;"></div>
   </div>
 </div>
 <script>
+let isViewMode = false;
+let isRejecting = false;
+
+function agreeRules() {
+  if (isRejecting) return;
+  document.getElementById("rules-modal").style.display = "none";
+}
+
+function openRulesView() {
+  isViewMode = true;
+  document.getElementById("modal-actions").style.display = "none";
+  document.getElementById("reject-msg").style.display = "none";
+  document.getElementById("view-close-tip").style.display = "block";
+  document.getElementById("rules-modal").style.display = "flex";
+}
+
+function closeRules() {
+  document.getElementById("rules-modal").style.display = "none";
+}
+
 function disagreeRules() {
+  if (isRejecting) return;
+  isRejecting = true;
+  const btnAgree = document.getElementById("btn-agree");
+  const btnDisagree = document.getElementById("btn-disagree");
+  btnAgree.disabled = true;
+  btnDisagree.disabled = true;
+  btnAgree.style.opacity = "0.45";
+  btnDisagree.style.opacity = "0.45";
+  btnAgree.style.cursor = "not-allowed";
+  btnDisagree.style.cursor = "not-allowed";
+
   let sec = 3;
   const msg = document.getElementById("reject-msg");
   msg.style.display = "block";
@@ -102,7 +134,7 @@ function disagreeRules() {
   <div style="text-align:center; margin-bottom:14px;">
     <button onclick="toggleBg()" id="bg-btn" class="mc-ctrl">⏰ 背景：自動（白天）</button>
     <button onclick="toggleBgm()" id="bgm-btn" class="mc-ctrl" style="margin-left:4px;">🎵 音樂：關</button>
-    <button onclick="document.getElementById('rules-modal').style.display='flex'" class="mc-ctrl" style="margin-left:4px;">📜 用戶守則</button>
+    <button onclick="openRulesView()" class="mc-ctrl" style="margin-left:4px;">📜 用戶守則</button>
   </div>
   <div class="notice"><strong>公告網：</strong>關注公告網以獲得最新消息（密碼已貼群組）</div>
 
