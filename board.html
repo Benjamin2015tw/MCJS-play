@@ -138,7 +138,6 @@
   const SUPABASE_KEY = "sb_publishable_k-yOKqfrSReMLHEaa4JtUg_08ep1LNP";
   const HEADERS = {
     "apikey": SUPABASE_KEY,
-    "Authorization": "Bearer " + SUPABASE_KEY,
     "Content-Type": "application/json",
     "Prefer": "return=representation"
   };
@@ -193,7 +192,7 @@
       setStatus("☁️ 雲端已同步", "#4ade80");
     } catch (err) {
       console.error(err);
-      setStatus("⚠️ 連線失敗（請確認已建立 posts 表）", "#f87171");
+      setStatus("⚠️ 連線失敗：" + (err.message || err).slice(0, 45), "#f87171");
     }
   }
 
