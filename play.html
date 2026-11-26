@@ -44,9 +44,41 @@
   details.bug-item[open] summary { border-bottom: 2px solid #373737; background: #777; }
   .bug-body { padding: 12px 14px; font-size: 13px; line-height: 1.6; }
   .empty-tip { text-align: center; padding: 20px; background: #8b8b8b; border: 3px solid #373737; color: #ffff55; font-size: 14px; display: none; margin-bottom: 12px; }
+
+  .mc-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.78); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 16px; }
+  .mc-modal-box { background: #c6c6c6; color: #222; border: 4px solid #000; box-shadow: inset 4px 4px 0 #fff, inset -4px -4px 0 #555; padding: 22px; max-width: 580px; width: 100%; }
+  .mc-modal-title { text-align: center; font-size: 20px; font-weight: bold; color: #222; text-shadow: 2px 2px 0 #fff; margin: 0 0 16px 0; }
+  .mc-modal-inner { background: #828282; border-top: 4px solid #373737; border-left: 4px solid #373737; border-right: 4px solid #fff; border-bottom: 4px solid #fff; padding: 18px 20px; color: #fff; text-shadow: 1.5px 1.5px 0 #222; font-size: 15px; line-height: 1.7; }
+  .mc-modal-warn { color: #ffff55; font-weight: bold; font-size: 16px; margin-bottom: 12px; }
+  .mc-modal-list { margin: 0; padding-left: 20px; }
+  .mc-modal-list li { margin-bottom: 10px; }
+  .mc-green { color: #55ff55; font-weight: bold; }
+  .mc-modal-actions { display: flex; gap: 14px; margin-top: 18px; }
+  .mc-modal-btn { flex: 1; background: #727272; color: #fff; border: 3px solid #000; box-shadow: inset 3px 3px 0 #aaa, inset -3px -3px 0 #444; padding: 12px; font-family: inherit; font-size: 15px; font-weight: bold; text-shadow: 2px 2px 0 #333; cursor: pointer; }
+  .mc-modal-btn:hover { background: #3c8527; box-shadow: inset 3px 3px 0 #6cc349, inset -3px -3px 0 #2a641c; color: #ffffa0; }
+  .mc-btn-disagree:hover { background: #9b2c2c; box-shadow: inset 3px 3px 0 #e53e3e, inset -3px -3px 0 #63171b; color: #fff; }
 </style>
 </head>
 <body>
+<div id="rules-modal" class="mc-modal-overlay">
+  <div class="mc-modal-box">
+    <div class="mc-modal-title">網頁版 Minecraft 多版本整理</div>
+    <div class="mc-modal-inner">
+      <div class="mc-modal-warn">[!] 用戶守則與注意事項</div>
+      <ul class="mc-modal-list">
+        <li><span class="mc-green">非官方聲明：</span>本站僅為連結整理，與 mcjs、Gaiusfun 等官方無關，遊戲版權皆屬上游原作者所有。</li>
+        <li><span class="mc-green">愛惜公益資源：</span>聯機若使用公益節點（如 hellosmp），請切勿惡意攻擊或濫用。</li>
+        <li><span class="mc-green">存檔備份習慣：</span>瀏覽器清理快取可能會導致遊戲進度遺失，重要存檔請定期手動匯出備份。</li>
+        <li><span class="mc-green">版本異常回報：</span>不同版本可能存在渲染或皮膚顯示等已知 Bug，遊玩前請先留意列表說明。</li>
+      </ul>
+    </div>
+    <div class="mc-modal-actions">
+      <button class="mc-modal-btn" onclick="localStorage.setItem('mc_rules_agreed','1');document.getElementById('rules-modal').style.display='none'">同意</button>
+      <button class="mc-modal-btn mc-btn-disagree" onclick="alert('請先同意用戶守則才能繼續瀏覽！')">不同意</button>
+    </div>
+  </div>
+</div>
+<script>if(localStorage.getItem("mc_rules_agreed")==="1")document.getElementById("rules-modal").style.display="none";</script>
 <div class="wrap">
   <h1>Web version of Minecraft</h1>
   <div style="text-align:center; margin-bottom:14px;">
