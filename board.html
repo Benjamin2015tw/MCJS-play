@@ -71,7 +71,7 @@
   <div class="lock-box">
     <h2>🔒 雲端共享便利貼牆</h2>
     <p>請輸入訪問密碼以即時同步查看與編輯</p>
-    <input type="password" id="pwd-input" class="lock-input" placeholder="請輸入密碼（預設 1234）" onkeydown="if(event.key==='Enter')unlock()">
+    <input type="password" id="pwd-input" class="lock-input" placeholder="請輸入訪問密碼" onkeydown="if(event.key==='Enter')unlock()">
     <button class="btn-primary" onclick="unlock()">解鎖進入</button>
     <div id="lock-err">密碼錯誤，請再試一次！</div>
   </div>
@@ -131,7 +131,7 @@
 
 <script>
   // ★★★ 網站訪問密碼（可自行修改） ★★★
-  const BOARD_PASSWORD = "1234";
+  const BOARD_PASSWORD = "wcesmcjs.play";
 
   // Supabase 雲端連線設定
   const SUPABASE_API = "https://yjbzqgjcnzcrjrejjtpz.supabase.co/rest/v1/posts";
