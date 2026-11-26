@@ -73,12 +73,30 @@
       </ul>
     </div>
     <div class="mc-modal-actions">
-      <button class="mc-modal-btn" onclick="localStorage.setItem('mc_rules_agreed','1');document.getElementById('rules-modal').style.display='none'">同意</button>
-      <button class="mc-modal-btn mc-btn-disagree" onclick="alert('請先同意用戶守則才能繼續瀏覽！')">不同意</button>
+      <button class="mc-modal-btn" onclick="document.getElementById('rules-modal').style.display='none'">同意</button>
+      <button class="mc-modal-btn mc-btn-disagree" onclick="disagreeRules()">不同意</button>
     </div>
+    <div id="reject-msg" style="display:none;color:#ff5555;text-align:center;font-weight:bold;margin-top:14px;text-shadow:1.5px 1.5px 0 #222;font-size:15px;"></div>
   </div>
 </div>
-<script>if(localStorage.getItem("mc_rules_agreed")==="1")document.getElementById("rules-modal").style.display="none";</script>
+<script>
+function disagreeRules() {
+  let sec = 3;
+  const msg = document.getElementById("reject-msg");
+  msg.style.display = "block";
+  msg.innerText = `您已拒絕使用者守則，頁面即將關閉。（${sec} 秒）`;
+  const timer = setInterval(() => {
+    sec--;
+    if (sec > 0) {
+      msg.innerText = `您已拒絕使用者守則，頁面即將關閉。（${sec} 秒）`;
+    } else {
+      clearInterval(timer);
+      location.replace("about:blank");
+    }
+  }, 1000);
+}
+</script>
+
 <div class="wrap">
   <h1>Web version of Minecraft</h1>
   <div style="text-align:center; margin-bottom:14px;">
