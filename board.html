@@ -3,11 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>私人便利貼牆 - Padlet Board</title>
+<title>雲端同步便利貼牆 - Padlet Board</title>
 <style>
   * { box-sizing: border-box; }
   body { font-family: "Microsoft JhengHei", sans-serif; margin: 0; background: #1e293b; color: #f8fafc; min-height: 100vh; }
-  /* 密碼鎖遮罩 */
   #lock-screen { position: fixed; inset: 0; background: #0f172a; display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px; }
   .lock-box { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 32px 24px; max-width: 360px; width: 100%; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
   .lock-box h2 { margin: 0 0 8px 0; font-size: 22px; }
@@ -18,9 +17,9 @@
   .btn-primary:hover { background: #0369a1; }
   #lock-err { color: #f87171; font-size: 13px; margin-top: 10px; display: none; }
 
-  /* 頂部導航列 */
   header { background: #0f172a; border-bottom: 1px solid #334155; padding: 14px 20px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
   .brand { font-size: 18px; font-weight: bold; display: flex; align-items: center; gap: 8px; }
+  .sync-badge { font-size: 12px; padding: 3px 8px; border-radius: 999px; background: #1e293b; border: 1px solid #334155; color: #38bdf8; }
   .toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
   .search-box { padding: 8px 12px; border-radius: 8px; border: 1px solid #475569; background: #1e293b; color: #fff; font-size: 13px; outline: none; }
   .tool-btn { padding: 8px 12px; border-radius: 8px; border: 1px solid #475569; background: #334155; color: #fff; font-size: 13px; cursor: pointer; }
@@ -28,7 +27,6 @@
   .tool-btn.add { background: #16a34a; border-color: #15803d; font-weight: bold; }
   .tool-btn.add:hover { background: #15803d; }
 
-  /* 瀑布流便利貼牆 */
   .board { column-count: 4; column-gap: 16px; padding: 20px; max-width: 1400px; margin: 0 auto; }
   @media (max-width: 1100px) { .board { column-count: 3; } }
   @media (max-width: 800px) { .board { column-count: 2; } }
@@ -54,7 +52,6 @@
   .card-link:hover { background: rgba(255,255,255,0.9); }
   .card-footer { margin-top: 12px; font-size: 11px; color: #475569; display: flex; justify-content: space-between; }
 
-  /* 新增/編輯彈窗 */
   .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 500; padding: 16px; }
   .modal-card { background: #1e293b; border: 1px solid #334155; border-radius: 14px; padding: 20px; max-width: 440px; width: 100%; color: #fff; }
   .modal-card h3 { margin: 0 0 14px 0; }
@@ -65,37 +62,35 @@
   .color-dot { width: 28px; height: 28px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; }
   .color-dot.selected { border-color: #fff; transform: scale(1.1); }
   .modal-btns { display: flex; gap: 10px; margin-top: 16px; }
+  .empty-board { text-align: center; color: #94a3b8; padding: 60px 20px; font-size: 15px; }
 </style>
 </head>
 <body>
 
-<!-- 密碼鎖定畫面 -->
 <div id="lock-screen">
   <div class="lock-box">
-    <h2>🔒 私人便利貼牆</h2>
-    <p>請輸入訪問密碼以查看與編輯內容</p>
+    <h2>🔒 雲端共享便利貼牆</h2>
+    <p>請輸入訪問密碼以即時同步查看與編輯</p>
     <input type="password" id="pwd-input" class="lock-input" placeholder="請輸入密碼（預設 1234）" onkeydown="if(event.key==='Enter')unlock()">
     <button class="btn-primary" onclick="unlock()">解鎖進入</button>
     <div id="lock-err">密碼錯誤，請再試一次！</div>
   </div>
 </div>
 
-<!-- 主畫面 -->
 <header>
-  <div class="brand">📌 我的靈感便利貼牆</div>
+  <div class="brand">📌 共享便利貼牆 <span id="sync-status" class="sync-badge">☁️ 準備連線</span></div>
   <div class="toolbar">
     <input type="text" id="search" class="search-box" placeholder="🔍 搜尋便利貼..." oninput="render()">
     <button class="tool-btn add" onclick="openModal()">＋ 新增便利貼</button>
+    <button class="tool-btn" onclick="fetchPosts(true)">🔄 立即刷新</button>
     <button class="tool-btn" onclick="exportData()">📤 匯出備份</button>
-    <button class="tool-btn" onclick="document.getElementById('import-file').click()">📥 匯入</button>
     <button class="tool-btn" onclick="lockPage()">🔒 鎖定</button>
-    <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
   </div>
 </header>
 
 <div id="board" class="board"></div>
+<div id="empty-msg" class="empty-board" style="display:none;">目前牆上還沒有便利貼，點擊右上角「＋ 新增便利貼」發佈第一張吧！</div>
 
-<!-- 新增/編輯便利貼視窗 -->
 <div id="editor-modal" class="modal-bg" onclick="if(event.target===this)closeModal()">
   <div class="modal-card">
     <h3 id="modal-title">新增便利貼</h3>
@@ -106,7 +101,7 @@
     </div>
     <div class="field">
       <label>內容</label>
-      <textarea id="post-body" rows="4" placeholder="寫下筆記、想法或待辦事項..."></textarea>
+      <textarea id="post-body" rows="4" placeholder="寫下筆記、想法或留言..."></textarea>
     </div>
     <div class="field">
       <label>圖片網址（選填）</label>
@@ -129,19 +124,34 @@
     </div>
     <div class="modal-btns">
       <button class="tool-btn" style="flex:1" onclick="closeModal()">取消</button>
-      <button class="btn-primary" style="flex:1" onclick="savePost()">儲存發佈</button>
+      <button id="save-btn" class="btn-primary" style="flex:1" onclick="savePost()">儲存發佈</button>
     </div>
   </div>
 </div>
 
 <script>
-  // ★★★ 在這裡修改你的專屬密碼 ★★★
+  // ★★★ 網站訪問密碼（可自行修改） ★★★
   const BOARD_PASSWORD = "1234";
 
+  // Supabase 雲端連線設定
+  const SUPABASE_API = "https://yjbzqgjcnzcrjrejjtpz.supabase.co/rest/v1/posts";
+  const SUPABASE_KEY = "sb_publishable_k-yOKqfrSReMLHEaa4JtUg_08ep1LNP";
+  const HEADERS = {
+    "apikey": SUPABASE_KEY,
+    "Authorization": "Bearer " + SUPABASE_KEY,
+    "Content-Type": "application/json",
+    "Prefer": "return=representation"
+  };
+
   let selectedColor = "c-yellow";
-  let posts = JSON.parse(localStorage.getItem("my_padlet_posts") || "null") || [
-    { id: 1, title: "歡迎使用私人便利貼牆！", body: "點擊右上角「＋ 新增便利貼」就能隨時張貼筆記、連結或圖片。\n記得點擊「📤 匯出備份」可將整面牆存檔帶走！", img: "", link: "", color: "c-yellow", pin: true, time: "置頂說明" }
-  ];
+  let posts = [];
+  let pollTimer = null;
+
+  function setStatus(text, color = "#38bdf8") {
+    const el = document.getElementById("sync-status");
+    el.innerText = text;
+    el.style.color = color;
+  }
 
   function unlock() {
     const val = document.getElementById("pwd-input").value;
@@ -149,7 +159,7 @@
       sessionStorage.setItem("padlet_unlocked", "1");
       document.getElementById("lock-screen").style.display = "none";
       document.getElementById("lock-err").style.display = "none";
-      render();
+      startSync();
     } else {
       document.getElementById("lock-err").style.display = "block";
     }
@@ -157,12 +167,34 @@
 
   function lockPage() {
     sessionStorage.removeItem("padlet_unlocked");
+    clearInterval(pollTimer);
     document.getElementById("pwd-input").value = "";
     document.getElementById("lock-screen").style.display = "flex";
   }
 
+  function startSync() {
+    fetchPosts(true);
+    clearInterval(pollTimer);
+    pollTimer = setInterval(() => fetchPosts(false), 3000);
+  }
+
   if (sessionStorage.getItem("padlet_unlocked") === "1") {
     document.getElementById("lock-screen").style.display = "none";
+    startSync();
+  }
+
+  async function fetchPosts(showLoading = false) {
+    if (showLoading) setStatus("☁️ 同步中...", "#facc15");
+    try {
+      const res = await fetch(`${SUPABASE_API}?select=*&order=id.desc`, { headers: HEADERS });
+      if (!res.ok) throw new Error(await res.text());
+      posts = await res.json();
+      render();
+      setStatus("☁️ 雲端已同步", "#4ade80");
+    } catch (err) {
+      console.error(err);
+      setStatus("⚠️ 連線失敗（請確認已建立 posts 表）", "#f87171");
+    }
   }
 
   function pickColor(el) {
@@ -198,7 +230,12 @@
     document.getElementById("editor-modal").style.display = "none";
   }
 
-  function savePost() {
+  async function savePost() {
+    const btn = document.getElementById("save-btn");
+    btn.disabled = true;
+    btn.innerText = "上傳中...";
+    setStatus("☁️ 正在儲存...", "#facc15");
+
     const id = document.getElementById("edit-id").value;
     const title = document.getElementById("post-title").value.trim() || "無標題便利貼";
     const body = document.getElementById("post-body").value.trim();
@@ -206,45 +243,75 @@
     const link = document.getElementById("post-link").value.trim();
     const now = new Date().toLocaleString("zh-TW", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" });
 
-    if (id) {
-      const idx = posts.findIndex(x => x.id == id);
-      if (idx !== -1) posts[idx] = { ...posts[idx], title, body, img, link, color: selectedColor };
-    } else {
-      posts.unshift({ id: Date.now(), title, body, img, link, color: selectedColor, pin: false, time: now });
+    try {
+      if (id) {
+        const res = await fetch(`${SUPABASE_API}?id=eq.${id}`, {
+          method: "PATCH",
+          headers: HEADERS,
+          body: JSON.stringify({ title, body, img, link, color: selectedColor })
+        });
+        if (!res.ok) throw new Error(await res.text());
+      } else {
+        const res = await fetch(SUPABASE_API, {
+          method: "POST",
+          headers: HEADERS,
+          body: JSON.stringify({ id: Date.now(), title, body, img, link, color: selectedColor, pin: false, time: now })
+        });
+        if (!res.ok) throw new Error(await res.text());
+      }
+      closeModal();
+      await fetchPosts(true);
+    } catch (err) {
+      alert("儲存失敗：" + err.message);
+      setStatus("⚠️ 儲存失敗", "#f87171");
+    } finally {
+      btn.disabled = false;
+      btn.innerText = "儲存發佈";
     }
-    sync();
-    closeModal();
   }
 
-  function togglePin(id) {
+  async function togglePin(id) {
     const p = posts.find(x => x.id === id);
-    if (p) p.pin = !p.pin;
-    sync();
-  }
-
-  function delPost(id) {
-    if (confirm("確定要刪除這張便利貼嗎？")) {
-      posts = posts.filter(x => x.id !== id);
-      sync();
+    if (!p) return;
+    setStatus("☁️ 更新釘選...", "#facc15");
+    try {
+      await fetch(`${SUPABASE_API}?id=eq.${id}`, {
+        method: "PATCH",
+        headers: HEADERS,
+        body: JSON.stringify({ pin: !p.pin })
+      });
+      await fetchPosts(false);
+    } catch (err) {
+      setStatus("⚠️ 操作失敗", "#f87171");
     }
   }
 
-  function sync() {
-    localStorage.setItem("my_padlet_posts", JSON.stringify(posts));
-    render();
+  async function delPost(id) {
+    if (!confirm("確定要從雲端刪除這張便利貼嗎？所有人將同步移除！")) return;
+    setStatus("☁️ 正在刪除...", "#facc15");
+    try {
+      await fetch(`${SUPABASE_API}?id=eq.${id}`, {
+        method: "DELETE",
+        headers: HEADERS
+      });
+      await fetchPosts(false);
+    } catch (err) {
+      setStatus("⚠️ 刪除失敗", "#f87171");
+    }
   }
 
   function esc(str) {
-    return str.replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+    return (str || "").replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
   }
 
   function render() {
     const kw = document.getElementById("search").value.trim().toLowerCase();
     const sorted = [...posts].sort((a, b) => (b.pin ? 1 : 0) - (a.pin ? 1 : 0));
-    const filtered = sorted.filter(p => !kw || p.title.toLowerCase().includes(kw) || p.body.toLowerCase().includes(kw));
+    const filtered = sorted.filter(p => !kw || (p.title || "").toLowerCase().includes(kw) || (p.body || "").toLowerCase().includes(kw));
 
+    document.getElementById("empty-msg").style.display = filtered.length === 0 ? "block" : "none";
     document.getElementById("board").innerHTML = filtered.map(p => `
-      <div class="card ${p.color}">
+      <div class="card ${esc(p.color || 'c-yellow')}">
         <div class="card-header">
           <div class="card-title">${p.pin ? "📌 " : ""}${esc(p.title)}</div>
           <div class="card-actions">
@@ -265,24 +332,9 @@
     const blob = new Blob([JSON.stringify(posts, null, 2)], { type: "application/json" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = "padlet-backup.json";
+    a.download = "padlet-cloud-backup.json";
     a.click();
   }
-
-  function importData(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = ev => {
-      try {
-        const data = JSON.parse(ev.target.result);
-        if (Array.isArray(data)) { posts = data; sync(); alert("✅ 匯入成功！"); }
-      } catch { alert("❌ 檔案格式錯誤"); }
-    };
-    reader.readAsText(file);
-  }
-
-  render();
 </script>
 </body>
 </html>
