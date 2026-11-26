@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta name="referrer" content="no-referrer">
+<meta name="google" content="notranslate">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Web version of Minecraft - 網頁版 Minecraft 多版本整理</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%2379553a'/><rect width='16' height='5' fill='%23599c34'/><rect x='2' y='5' width='3' height='2' fill='%23599c34'/><rect x='9' y='5' width='4' height='3' fill='%23599c34'/><rect x='14' y='5' width='2' height='2' fill='%23599c34'/></svg>">
+<link rel="preload" as="image" href="https://truth.bahamut.com.tw/s01/202601/forum/18673/adb403e0a7f4c7d110a0d20456a6e6fa.JPG">
+<link rel="preload" as="image" href="https://truth.bahamut.com.tw/s01/202601/forum/18673/57b5ce5054f2ba795a92b1c096a5070f.JPG">
+<link rel="preload" as="image" href="https://truth.bahamut.com.tw/s01/202008/c978967732a16354bce171ae575bb258.JPG">
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: "Microsoft JhengHei", sans-serif; background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://truth.bahamut.com.tw/s01/202601/forum/18673/adb403e0a7f4c7d110a0d20456a6e6fa.JPG') no-repeat center center fixed; background-size: cover; transition: background-image 0.4s ease; color: #fff; margin: 0; padding: 20px; display: block; }
+  .wrap { background: #c6c6c6; color: #222; border: 4px solid #000; box-shadow: inset 4px 4px 0 #fff, inset -4px -4px 0 #555; padding: 24px; max-width: 600px; width: 100%; margin: 0 auto; display: block; }
+  h1, h2 { text-align: center; text-shadow: 2px 2px 0 #fff; margin: 14px 0; display: block; }
+  .notice { background: #8b8b8b; color: #fff; text-shadow: 1px 1px 0 #333; border: 3px solid #373737; padding: 14px; margin-bottom: 16px; font-size: 14px; line-height: 1.6; display: block; }
+  .mc-ctrl { background: #555; color: #fff; border: 3px solid #000; box-shadow: inset 2px 2px 0 #888, inset -2px -2px 0 #333; padding: 7px 12px; cursor: pointer; font-family: inherit; font-size: 13px; text-shadow: 1px 1px 0 #222; white-space: nowrap; }
+  .mc-ctrl:hover { background: #666; }
+  .mc-ctrl.active { background: #222; box-shadow: inset 2px 2px 0 #444, inset -2px -2px 0 #000; color: #ffff55; }
+  .search-filter-bar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; align-items: center; }
+  .mc-search { flex: 1 1 180px; background: #222; color: #fff; border: 3px solid #000; box-shadow: inset 2px 2px 0 #111, inset -2px -2px 0 #444; padding: 7px 10px; font-family: inherit; font-size: 13px; outline: none; }
+  .mc-search::placeholder { color: #aaa; }
+  .mc-search:focus { border-color: #ffff55; }
+  .filter-btns { display: flex; flex-wrap: wrap; gap: 4px; }
+  .btn { display: block; width: 100%; background: #727272; color: #fff; text-decoration: none; border: 3px solid #000; box-shadow: inset 3px 3px 0 #aaa, inset -3px -3px 0 #444; padding: 14px 16px; margin-bottom: 12px; text-shadow: 2px 2px 0 #333; }
+  .btn:hover { background: #3c8527; box-shadow: inset 3px 3px 0 #6cc349, inset -3px -3px 0 #2a641c; color: #ffffa0; }
+  .title { font-weight: bold; font-size: 16px; display: block; margin-bottom: 6px; line-height: 1.4; }
+  .badge { display: inline-block; font-size: 11px; padding: 1px 6px; margin-left: 5px; border: 2px solid #000; vertical-align: middle; text-shadow: 1px 1px 0 #222; font-weight: bold; }
+  .badge-rec { background: #3b6ea5; color: #e0f2fe; }
+  .badge-test { background: #b7791f; color: #fefcbf; }
+  .badge-rel { background: #2f855a; color: #c6f6d5; }
+  .badge-stop { background: #9b2c2c; color: #fed7d7; }
+  .badge-half { background: #975a16; color: #fefcbf; }
+  .badge-perf { background: #6b46c1; color: #e9d8fd; }
+  .badge-retro { background: #744210; color: #fbd38d; }
+  .desc { font-size: 12px; color: #e2e8f0; display: block; }
+  details.bug-item { background: #8b8b8b; color: #fff; border: 3px solid #373737; margin-bottom: 8px; text-shadow: 1px 1px 0 #333; }
+  details.bug-item summary { padding: 10px 14px; cursor: pointer; font-weight: bold; color: #ffff55; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+  details.bug-item summary::-webkit-details-marker { display: none; }
+  details.bug-item summary::after { content: "▼"; font-size: 12px; color: #fff; }
+  details.bug-item[open] summary::after { content: "▲"; }
+  details.bug-item[open] summary { border-bottom: 2px solid #373737; background: #777; }
+  .bug-body { padding: 12px 14px; font-size: 13px; line-height: 1.6; }
+  .empty-tip { text-align: center; padding: 20px; background: #8b8b8b; border: 3px solid #373737; color: #ffff55; font-size: 14px; display: none; margin-bottom: 12px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Web version of Minecraft</h1>
+  <div style="text-align:center; margin-bottom:14px;">
+    <button onclick="toggleBg()" id="bg-btn" class="mc-ctrl">⏰ 背景：自動（白天）</button>
+    <button onclick="toggleBgm()" id="bgm-btn" class="mc-ctrl" style="margin-left:4px;">🎵 音樂：關</button>
+  </div>
+  <div class="notice"><strong>公告網：</strong>關注公告網以獲得最新消息（密碼已貼群組）</div>
+
+  <h2>遊玩 Play</h2>
+  <div class="search-filter-bar">
+    <input type="text" id="search-input" class="mc-search" placeholder="搜尋版本名、開發者、語言..." oninput="applyFilter()">
+    <div class="filter-btns">
+      <button class="mc-ctrl active" onclick="setTagFilter('all', this)">全部</button>
+      <button class="mc-ctrl" onclick="setTagFilter('rec', this)">推薦</button>
+      <button class="mc-ctrl" onclick="setTagFilter('rel', this)">正式版</button>
+      <button class="mc-ctrl" onclick="setTagFilter('test', this)">測試版</button>
+      <button class="mc-ctrl" onclick="setTagFilter('stop', this)">停更</button>
+    </div>
+  </div>
+
+  <div id="ver-list">
+    <a class="btn" data-tags="rec" href="https://1.mcjslink.144449.xyz/1.8.8wasm" target="_blank"><span class="title">EaglercraftX 1.8.8 <span class="badge badge-rec">推薦</span></span><span class="desc">✅ 高效能 ✅ 簡體中文 ✅ 英文 ✅ 觸控螢幕操作 ✅ 遠端連線 ✅ 內建光影</span></a>
+    <a class="btn" data-tags="" href="https://1.mcjslink.144449.xyz/1.12.2wasm" target="_blank"><span class="title">1.12.2wasm <span class="badge badge-perf">效能高</span></span><span class="desc">✅ 高效能 ✅ 簡體中文 ✅ 遠端聯機</span></a>
+    <a class="btn" data-tags="stop rel" href="https://mcjs-r2.pages.dev/assets/game?ver=26.3" target="_blank"><span class="title">Eaglercraft 26.3 <span class="badge badge-stop">停更</span><span class="badge badge-rel">正式版</span></span><span class="desc">✅ 簡體中文 ✅ 繁體中文 ✅ 繁體中文(文言文) ✅ 觸控螢幕操作 ✅ 遠端連線</span></a>
+    <a class="btn" data-tags="rec test" href="https://mcjs-r2.pages.dev/assets/game?ver=26.2" target="_blank"><span class="title">Eaglercraft 26.2 <span class="badge badge-rec">推薦</span><span class="badge badge-test">測試版</span></span><span class="desc">✅ 簡體中文 ✅ 英文 ✅ 觸控螢幕操作 ✅ 遠端連線</span></a>
+    <a class="btn" data-tags="rec test" href="https://mcjs-r2.pages.dev/assets/game.html?ver=1.21.11" target="_blank"><span class="title">Eaglercraft 1.21.11 <span class="badge badge-rec">推薦</span><span class="badge badge-test">測試版</span></span><span class="desc">✅ 簡體中文 ✅ 遠端聯機</span></a>
+    <a class="btn" data-tags="stop test" href="https://mcjs-r2.pages.dev/assets/game.html?ver=1.20.6" target="_blank"><span class="title">Eaglercraft 1.20.6 <span class="badge badge-stop">停更</span><span class="badge badge-test">測試版</span></span><span class="desc">✅ 簡體中文 ✅ 遠端聯機</span></a>
+    <a class="btn" data-tags="test" href="https://mcjs-r2.pages.dev/assets/game.html?ver=1.19.4" target="_blank"><span class="title">Eaglercraft 1.19.4 <span class="badge badge-test">測試版</span></span><span class="desc">✅ 簡體中文 ✅ 遠端聯機 ✅ 多版本支援</span></a>
+    <a class="btn" data-tags="rel" href="https://mcjs-r2.pages.dev/assets/game.html?ver=1.15.2" target="_blank"><span class="title">Eaglercraft 1.15.2 <span class="badge badge-rel">正式版</span></span><span class="desc">✅ 全語言 ✅ 遠端聯機 ✅ 觸控螢幕操作</span></a>
+    <a class="btn" data-tags="stop test" href="https://mcjs-r2.pages.dev/assets/game.html?ver=1.14.4" target="_blank"><span class="title">Eaglercraft 1.14.4 <span class="badge badge-stop">停更</span><span class="badge badge-test">測試版</span></span><span class="desc">✅ 全語言 ✅ 遠端聯機 ✅ 觸控螢幕操作</span></a>
+    <a class="btn" data-tags="stop rel" href="https://mcjs-r2.pages.dev/assets/game.html?ver=1.13.2" target="_blank"><span class="title">Eaglercraft 1.13.2 <span class="badge badge-half">半停更</span><span class="badge badge-rel">正式版</span></span><span class="desc">✅ 簡體中文 ✅ 遠端聯機</span></a>
+    <a class="btn" data-tags="" href="https://1.mcjslink.144449.xyz/1.5.2" target="_blank"><span class="title">Eaglercraft 1.5.2 <span class="badge badge-retro">懷舊</span></span><span class="desc">✅ 經典懷舊版 ✅ 支援低配備裝置</span></a>
+  </div>
+  <div id="empty-tip" class="empty-tip">找不到符合條件的版本，請嘗試其他關鍵字或篩選標籤。</div>
+
+  <h2>已知 Bug 與注意事項（點擊展開）</h2>
+  <details class="bug-item">
+    <summary>1.13.2 注意事項</summary>
+    <div class="bug-body">
+      - 創建世界時「允許作弊」開關失效，需要開啟共享世界才能作弊<br>
+      - 物品模型圖層混亂 / 顛倒<br>
+      - 箱子等不完整方塊渲染錯誤<br>
+      - 本地上傳的皮膚無法正常顯示
+    </div>
+  </details>
+  <details class="bug-item">
+    <summary>1.14.4 注意事項</summary>
+    <div class="bug-body">
+      - 披風渲染問題<br>
+      - 更改名字要重新啟動遊戲才生效<br>
+      - 本地上傳的皮膚遊戲無法保存<br>
+      - 生物群系過渡開了遊戲可能會卡頓
+    </div>
+  </details>
+  <details class="bug-item">
+    <summary>1.15.2 & 1.16.5 注意事項</summary>
+    <div class="bug-body">
+      <strong>1.15.2：</strong>手機遊玩可能無法顯示全景圖（不影響正常遊玩）<br>
+      <strong>1.16.5：</strong>遊戲整體亮度偏暗
+    </div>
+  </details>
+  <details class="bug-item" open>
+    <summary>1.20.6 聯機節點解決方法</summary>
+    <div class="bug-body">
+      自帶節點可能無法使用（可使用 <code style="background:#222;padding:2px 6px;color:#55ff55;">wss://relay.hellosmp.kdns.fr/</code> <button onclick="navigator.clipboard.writeText('wss://relay.hellosmp.kdns.fr/');this.innerText='✅ 已複製！';this.style.background='#3c8527';setTimeout(()=>{this.innerText='📋 一鍵複製';this.style.background='#555';},2000)" style="background:#555;color:#fff;border:2px solid #000;box-shadow:inset 2px 2px 0 #888,inset -2px -2px 0 #333;padding:2px 6px;cursor:pointer;font-family:inherit;font-size:12px;margin-left:2px;">📋 一鍵複製</button>）
+    </div>
+  </details>
+  <details class="bug-item">
+    <summary>1.21.11 / 26.2 / 26.3 注意事項</summary>
+    <div class="bug-body">
+      <strong>1.21.11：</strong>TPS 可能有凍結等問題<br><br>
+      <strong>26.2：</strong>不支援 Vulkan 渲染器；聯機功能以及節點設定有一點點問題（不影響正常遊玩）<br><br>
+      <strong>26.3：</strong>不支援 Vulkan 渲染器；內建皮膚 / 披風無法選擇，需自行導入或在 26.2 中調整好後切回 26.3
+    </div>
+  </details>
+
+  <div class="notice" style="font-size:12px; margin-top:16px;">
+    <strong>聲明：</strong>本網站僅為整理網頁版 MC 連結，非官方網站，版權歸上游作者所有。
+  </div>
+</div>
+
+<script>
+  const bgs = [
+    "https://truth.bahamut.com.tw/s01/202601/forum/18673/adb403e0a7f4c7d110a0d20456a6e6fa.JPG",
+    "https://truth.bahamut.com.tw/s01/202601/forum/18673/57b5ce5054f2ba795a92b1c096a5070f.JPG",
+    "https://truth.bahamut.com.tw/s01/202008/c978967732a16354bce171ae575bb258.JPG"
+  ];
+  const timeNames = ["白天", "黃昏", "夜晚"];
+  let bgMode = parseInt(localStorage.getItem("mc_bg_mode") || "0");
+  if (bgMode < 0 || bgMode > 3) bgMode = 0;
+
+  function getAutoIndex() {
+    const h = new Date().getHours();
+    if (h >= 6 && h < 16) return 0;
+    if (h >= 16 && h < 19) return 1;
+    return 2;
+  }
+
+  function applyBg() {
+    let imgIdx, labelText;
+    if (bgMode === 0) {
+      imgIdx = getAutoIndex();
+      labelText = `⏰ 背景：自動（${timeNames[imgIdx]}）`;
+    } else {
+      imgIdx = bgMode - 1;
+      const icons = ["☀️", "🌇", "🌙"];
+      labelText = `${icons[imgIdx]} 切換背景（目前：${timeNames[imgIdx]}）`;
+    }
+    document.body.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('${bgs[imgIdx]}')`;
+    document.getElementById("bg-btn").innerText = labelText;
+  }
+
+  function toggleBg() {
+    bgMode = (bgMode + 1) % 4;
+    localStorage.setItem("mc_bg_mode", bgMode);
+    applyBg();
+  }
+  applyBg();
+
+  let currentTag = 'all';
+  function setTagFilter(tag, el) {
+    currentTag = tag;
+    document.querySelectorAll('.filter-btns .mc-ctrl').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    applyFilter();
+  }
+
+  function applyFilter() {
+    const keyword = document.getElementById('search-input').value.trim().toLowerCase();
+    let visibleCount = 0;
+    document.querySelectorAll('#ver-list .btn').forEach(btn => {
+      const tags = btn.getAttribute('data-tags') || '';
+      const text = btn.innerText.toLowerCase();
+      const matchTag = (currentTag === 'all' || tags.split(' ').includes(currentTag));
+      const matchKeyword = (!keyword || text.includes(keyword));
+      if (matchTag && matchKeyword) {
+        btn.style.display = 'block';
+        visibleCount++;
+      } else {
+        btn.style.display = 'none';
+      }
+    });
+    document.getElementById('empty-tip').style.display = (visibleCount === 0) ? 'block' : 'none';
+  }
+</script>
+<script>
+function playMcClick(pitch = 1.0) {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "square";
+    osc.frequency.setValueAtTime(600 * pitch, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(150 * pitch, ctx.currentTime + 0.045);
+    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.045);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.045);
+  } catch (e) {}
+}
+document.addEventListener("pointerdown", (e) => {
+  const target = e.target.closest("button, .btn, summary");
+  if (target) {
+    playMcClick(1.0);
+  }
+});
+</script>
+<script>
+let bgmPlaying = false;
+let bgmTimer = null;
+let bgmCtx = null;
+
+function playPianoNote(freq, dur) {
+  if (!bgmCtx) bgmCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (bgmCtx.state === "suspended") bgmCtx.resume();
+  const now = bgmCtx.currentTime;
+  const osc = bgmCtx.createOscillator();
+  const gain = bgmCtx.createGain();
+  osc.type = "sine";
+  osc.frequency.setValueAtTime(freq, now);
+  gain.gain.setValueAtTime(0.001, now);
+  gain.gain.linearRampToValueAtTime(0.08, now + 0.15);
+  gain.gain.exponentialRampToValueAtTime(0.0005, now + dur);
+  osc.connect(gain);
+  gain.connect(bgmCtx.destination);
+  osc.start(now);
+  osc.stop(now + dur);
+}
+
+const c418Notes = [
+  [261.63, 3.5], [329.63, 3.5], [392.00, 3.5], [493.88, 4.0],
+  [440.00, 3.5], [392.00, 3.5], [329.63, 4.0], [293.66, 3.5],
+  [261.63, 4.5], [196.00, 4.0], [246.94, 3.5], [329.63, 4.5]
+];
+let noteIdx = 0;
+
+function toggleBgm() {
+  const btn = document.getElementById("bgm-btn");
+  if (!bgmPlaying) {
+    bgmPlaying = true;
+    btn.innerText = "🎵 音樂：開";
+    btn.style.background = "#3c8527";
+    const step = () => {
+      if (!bgmPlaying) return;
+      const [freq, dur] = c418Notes[noteIdx % c418Notes.length];
+      playPianoNote(freq, dur);
+      noteIdx++;
+      bgmTimer = setTimeout(step, 2600);
+    };
+    step();
+  } else {
+    bgmPlaying = false;
+    clearTimeout(bgmTimer);
+    btn.innerText = "🎵 音樂：關";
+    btn.style.background = "#555";
+  }
+}
+</script>
+</body>
+</html>
